@@ -2,6 +2,8 @@
 Robotic arm visualizer. Want to build something from scratch (no AI) using new NeoVim setup.
 Coming along nicely, got a bit technical with the inverse kinematics solver ! Vim is really fun. To run just do below in env with pygame (weird download so no req.txt):
 
+Testing some nvim ... 
+
 ```bash
 python main.py
 ```
