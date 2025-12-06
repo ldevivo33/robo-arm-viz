@@ -1,6 +1,7 @@
 import pygame
 from arm import Arm
-from angle_diff import angle_diff
+from helpers import angle_diff, reset_target
+from collections import deque
 
 pygame.init()
 
@@ -14,7 +15,7 @@ theta1_current, theta2_current = 0,0
 theta1_target, theta2_target = None, None
 
 target_pos = None
-
+targets = deque([])
 k = 0.05
 
 BASE_POSITION = (250,250)
@@ -25,24 +26,35 @@ while True:
             pygame.quit()
             raise SystemExit
         if event.type == pygame.MOUSEBUTTONUP:
-            target_pos = pygame.mouse.get_pos()
-            theta1_target, theta2_target = myarm.solve_ik(target_pos[0], target_pos[1], BASE_POSITION)
-        if event.type == pygame.KEYDOWN:
-            target_pos = None
-            theta1_target, theta2_target = None, None
+            targets.append(pygame.mouse.get_pos())
 
     window.fill("grey")
 
+    if targets:
+        target_pos = targets[0] 
+        theta1_target, theta2_target = myarm.solve_ik(target_pos[0], target_pos[1], BASE_POSITION)
+
     if target_pos and theta1_target and theta2_target:
-        pygame.draw.circle(window, "red", target_pos, 15)
+        for target in targets:
+            if target == target_pos:
+                COLOR = "red"
+            else:
+                COLOR = "darksalmon"
+
+            pygame.draw.circle(window, COLOR, target, 15)
+        
         theta1_current += k * angle_diff(theta1_current,theta1_target)
         theta2_current += k * angle_diff(theta2_current,theta2_target)
     else:
         theta1_current += .01
         theta2_current += .3
 
-    myarm.Draw(window, BASE_POSITION, theta1_current, theta2_current)
-       
+    end = myarm.Draw(window, BASE_POSITION, theta1_current, theta2_current)
+    
+    if target_pos and abs(end[0] - target_pos[0]) <= 2 and abs(end[1] - target_pos[1]) <= 2:
+        theta1_target, theta2_target = reset_target(theta1_target, theta2_target)
+        targets.popleft() 
+
     pygame.display.flip()
     clock.tick(60)
 

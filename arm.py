@@ -22,9 +22,13 @@ class Arm:
         J2 = (int(J2_offset[0] + base_position[0]), int(base_position[1] - J2_offset[1]))
 
         #Draw from base to J1, J1 to J2
-        pygame.draw.line(screen, "orange", J0,J1, width = 8)
+        pygame.draw.line(screen, "blue", J0,J1, width = 8)
         pygame.draw.line(screen, "blue", J1, J2, width = 8)
-        return
+        
+        pygame.draw.circle(screen, "black", J0, 5)
+        pygame.draw.circle(screen, "black", J1, 3)
+        pygame.draw.circle(screen, "yellow", J2, 2)
+        return J2
 
     def solve_ik(self, target_x, target_y, base_position):
         x, y = target_x - base_position[0], base_position[1] - target_y
