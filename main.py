@@ -16,6 +16,9 @@ theta1_target, theta2_target = None, None
 
 target_pos = None
 targets = deque([])
+
+trail = deque([])
+
 k = 0.05
 
 BASE_POSITION = (250,250)
@@ -42,7 +45,9 @@ while True:
                 COLOR = "darksalmon"
 
             pygame.draw.circle(window, COLOR, target, 15)
-        
+            if target == target_pos:
+                pygame.draw.circle(window, "darkolivegreen2", target, 3)
+
         theta1_current += k * angle_diff(theta1_current,theta1_target)
         theta2_current += k * angle_diff(theta2_current,theta2_target)
     else:
@@ -50,8 +55,13 @@ while True:
         theta2_current += .3
 
     end = myarm.Draw(window, BASE_POSITION, theta1_current, theta2_current)
-    
-    if target_pos and abs(end[0] - target_pos[0]) <= 2 and abs(end[1] - target_pos[1]) <= 2:
+    trail.append(end)
+    if len(trail) > 75:
+        trail.popleft()
+    for i,dot in enumerate(trail):
+        pygame.draw.circle(window, "lemonchiffon", dot, 3 - ((200-i) * .01))
+
+    if target_pos and abs(end[0] - target_pos[0]) <= 3 and abs(end[1] - target_pos[1]) <= 3:
         theta1_target, theta2_target = reset_target(theta1_target, theta2_target)
         targets.popleft() 
 
